@@ -1,0 +1,6 @@
+.build/
+.swiftpm/
+Transcribe.app/
+Transcribe.icns
+Transcribe.iconset/
+.DS_Store
