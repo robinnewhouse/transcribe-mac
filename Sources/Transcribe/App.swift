@@ -1,4 +1,5 @@
 import SwiftUI
+import TranscribeCore
 import UniformTypeIdentifiers
 
 let docsURL = URL(string: "https://www.assemblyai.com/dashboard/api-keys")!

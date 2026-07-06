@@ -1,11 +1,11 @@
 import Foundation
 
-enum AAIError: LocalizedError {
+public enum AAIError: LocalizedError {
     case http(Int, String)
     case decode
     case transcript(String)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .http(let code, let body):
             if code == 401 { return "Invalid API key." }
@@ -16,9 +16,13 @@ enum AAIError: LocalizedError {
     }
 }
 
-struct AssemblyAI {
-    let apiKey: String
+public struct AssemblyAI {
+    public let apiKey: String
     private let base = URL(string: "https://api.assemblyai.com")!
+
+    public init(apiKey: String) {
+        self.apiKey = apiKey
+    }
 
     private func request(_ path: String, method: String) -> URLRequest {
         var r = URLRequest(url: base.appendingPathComponent(path))
@@ -27,7 +31,7 @@ struct AssemblyAI {
         return r
     }
 
-    func upload(file: URL, progress: @escaping (Double) -> Void) async throws -> String {
+    public func upload(file: URL, progress: @escaping (Double) -> Void) async throws -> String {
         var r = request("/v2/upload", method: "POST")
         r.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
 
@@ -45,7 +49,7 @@ struct AssemblyAI {
         return parsed.upload_url
     }
 
-    func submit(audioURL: String) async throws -> String {
+    public func submit(audioURL: String) async throws -> String {
         var r = request("/v2/transcript", method: "POST")
         r.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let body: [String: Any] = [
@@ -66,18 +70,18 @@ struct AssemblyAI {
         return parsed.id
     }
 
-    struct Utterance: Decodable {
-        let speaker: String
-        let text: String
+    public struct Utterance: Decodable {
+        public let speaker: String
+        public let text: String
     }
-    struct Transcript: Decodable {
-        let status: String
-        let text: String?
-        let error: String?
-        let utterances: [Utterance]?
+    public struct Transcript: Decodable {
+        public let status: String
+        public let text: String?
+        public let error: String?
+        public let utterances: [Utterance]?
     }
 
-    func poll(id: String) async throws -> Transcript {
+    public func poll(id: String) async throws -> Transcript {
         let r = request("/v2/transcript/\(id)", method: "GET")
         while true {
             let (data, resp) = try await URLSession.shared.data(for: r)
@@ -108,7 +112,7 @@ private final class UploadProgress: NSObject, URLSessionTaskDelegate {
     }
 }
 
-func formatTranscript(_ t: AssemblyAI.Transcript) -> String {
+public func formatTranscript(_ t: AssemblyAI.Transcript) -> String {
     if let utterances = t.utterances, !utterances.isEmpty {
         return utterances.map { "Speaker \($0.speaker):\n\($0.text)" }
                          .joined(separator: "\n\n") + "\n"
@@ -116,8 +120,8 @@ func formatTranscript(_ t: AssemblyAI.Transcript) -> String {
     return (t.text ?? "") + "\n"
 }
 
-func loadKeyFromDotenv() -> String? {
-    let path = (NSHomeDirectory() as NSString).appendingPathComponent(".env")
+public func loadKeyFromDotenv(at path: String? = nil) -> String? {
+    let path = path ?? (NSHomeDirectory() as NSString).appendingPathComponent(".env")
     guard let contents = try? String(contentsOfFile: path, encoding: .utf8) else { return nil }
     for rawLine in contents.split(separator: "\n", omittingEmptySubsequences: true) {
         let line = rawLine.trimmingCharacters(in: .whitespaces)
@@ -135,7 +139,7 @@ func loadKeyFromDotenv() -> String? {
     return nil
 }
 
-func outputURL(for source: URL) -> URL {
+public func outputURL(for source: URL) -> URL {
     let tmp = FileManager.default.temporaryDirectory.resolvingSymlinksInPath().path
     let sourceDir = source.deletingLastPathComponent().resolvingSymlinksInPath().path
     let dir: URL

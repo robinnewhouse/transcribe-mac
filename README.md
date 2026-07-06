@@ -4,6 +4,8 @@ A tiny native macOS app: drop a recording in, get a text file with speaker turns
 
 That's the whole feature set. No editing, no history, no batch queue. One window, one drop zone.
 
+There is also `transcribe-cli`, a headless companion built from the same core — same pipeline, no window. Run `transcribe-cli --help` for usage. Scripts (e.g. the Hermes voice-memo sweep) use it for unattended transcription.
+
 ## Features
 
 - Drop audio/video files onto the window or the Dock icon
@@ -20,7 +22,7 @@ Requires macOS 13+ and the Xcode Command Line Tools (`xcode-select --install`).
 ./build.sh
 ```
 
-Produces `Transcribe.app` in the project root. Drag it to `/Applications`.
+Produces `Transcribe.app` and `transcribe-cli` in the project root. Drag the app to `/Applications`.
 
 On first launch macOS Gatekeeper will warn that the app is unsigned — right-click → Open → "Open anyway."
 

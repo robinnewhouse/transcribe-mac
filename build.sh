@@ -6,17 +6,11 @@ cd "$(dirname "$0")"
 APP="Transcribe.app"
 CONTENTS="$APP/Contents"
 MACOS="$CONTENTS/MacOS"
-BIN_TMP=".build/Transcribe"
-
-mkdir -p "$(dirname "$BIN_TMP")"
 
 echo "Compiling…"
-swiftc \
-    -O \
-    -target arm64-apple-macos13.0 \
-    -parse-as-library \
-    -o "$BIN_TMP" \
-    Sources/Transcribe/*.swift
+swift build -c release
+BIN_TMP=".build/release/Transcribe"
+cp .build/release/TranscribeCLI transcribe-cli
 
 echo "Generating icon…"
 swift make-icon.swift >/dev/null
